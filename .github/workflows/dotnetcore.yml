@@ -2,10 +2,10 @@ name: .NET Core
 
 on:
   push:
-    branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
-
+    branches:    
+      - '*'         # matches every branch
+      - '*/*'       # matches every branch containing a single '/'
+      - '!master'   # excludes master
 jobs:
   build:
 
