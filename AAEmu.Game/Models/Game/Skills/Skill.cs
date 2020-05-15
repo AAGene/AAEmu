@@ -251,6 +251,7 @@ namespace AAEmu.Game.Models.Game.Skills
                 {
                     return;
                 }
+                caster.BroadcastPacket(new SCPlotEndedPacket(TlId), true);
                 TlIdManager.Instance.ReleaseId(TlId);
                 //TlId = 0;
             }
@@ -631,10 +632,10 @@ namespace AAEmu.Game.Models.Game.Skills
             TlIdManager.Instance.ReleaseId(TlId);
             //TlId = 0;
 
-            //if (Template.CastingTime > 0)
-            //{
-            //    caster.BroadcastPacket(new SCSkillStoppedPacket(caster.ObjId, Template.Id), true);
-            //}
+            if (Template.CastingTime > 0)
+            {
+                caster.BroadcastPacket(new SCSkillStoppedPacket(caster.ObjId, Template.Id), true);
+            }
         }
 
         public void Stop(Unit caster)
