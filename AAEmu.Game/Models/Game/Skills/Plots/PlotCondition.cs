@@ -48,6 +48,7 @@ namespace AAEmu.Game.Models.Game.Skills.Plots
                     break;
                 case PlotConditionType.CombatDiceResult:
                     res = false; // Every CombatDiceResult is a NotCondition -> false makes it true. 
+                    // Combat Dice Result 252 is often used - might mean Critical hit. 
                     break;
                 case PlotConditionType.InstrumentType:
                     res = true;

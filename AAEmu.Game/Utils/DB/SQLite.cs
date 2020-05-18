@@ -11,7 +11,7 @@ namespace AAEmu.Game.Utils.DB
 
         public static SqliteConnection CreateConnection()
         {
-            var connection = new SqliteConnection($"Data Source=file:{FileManager.AppPath}/Data/compact.sqlite3; Mode=ReadOnly");
+            var connection = new SqliteConnection($"Data Source=file:./Data/compact.sqlite3; Mode=ReadOnly");
             try
             {
                 connection.Open();

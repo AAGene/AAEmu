@@ -466,11 +466,26 @@ namespace AAEmu.Game.Models.Game.Skills
 
             if (Template.EffectDelay > 0)
             {
-                TaskManager.Instance.Schedule(new ApplySkillTask(this, caster, casterCaster, target, targetCaster, skillObject), TimeSpan.FromMilliseconds(Template.EffectDelay));
+                var totalDelay = Template.EffectDelay;
+                if (Template.MatchAnimation) totalDelay += Template.FireAnim.Duration;
+                else if (Template.UseAnimTime) totalDelay += Template.FireAnim.CombatSyncTime;
+                
+                TaskManager.Instance.Schedule(new ApplySkillTask(this, caster, casterCaster, target, targetCaster, skillObject), TimeSpan.FromMilliseconds(totalDelay));
             }
             else
             {
-                Apply(caster, casterCaster, target, targetCaster, skillObject);
+                if (Template.MatchAnimation || Template.UseAnimTime)
+                {
+                    var totalDelay = 0;
+//                    if (Template.MatchAnimation) totalDelay += Template.FireAnim.Duration;
+//                    else if (Template.UseAnimTime) totalDelay += Template.FireAnim.CombatSyncTime;
+                    
+                    TaskManager.Instance.Schedule(
+                        new ApplySkillTask(this, caster, casterCaster, target, targetCaster, skillObject),
+                        TimeSpan.FromMilliseconds(totalDelay));
+                }
+                else 
+                   Apply(caster, casterCaster, target, targetCaster, skillObject);
             }
         }
 
@@ -526,12 +541,12 @@ namespace AAEmu.Game.Models.Game.Skills
                         continue;
                     }
 
-                    if (effect.TargetBuffTagId > 0 && !target.Effects.CheckBuffs(SkillManager.Instance.GetBuffsByTagId(effect.TargetBuffTagId)))
+                    if (effect.TargetBuffTagId > 0 && target.Effects.CheckBuffs(SkillManager.Instance.GetBuffsByTagId(effect.TargetBuffTagId)))
                     {
                         continue;
                     }
 
-                    if (effect.TargetNoBuffTagId > 0 && target.Effects.CheckBuffs(SkillManager.Instance.GetBuffsByTagId(effect.TargetNoBuffTagId)))
+                    if (effect.TargetNoBuffTagId > 0 && !target.Effects.CheckBuffs(SkillManager.Instance.GetBuffsByTagId(effect.TargetNoBuffTagId)))
                     {
                         continue;
                     }

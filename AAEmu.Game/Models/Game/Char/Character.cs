@@ -44,7 +44,7 @@ namespace AAEmu.Game.Models.Game.Char
         Female = 2
     }
 
-    public sealed class Character : Unit
+    public class Character : Unit
     {
         private static Logger _log = LogManager.GetCurrentClassLogger();
         public static Dictionary<uint, uint> _usedCharacterObjIds = new Dictionary<uint, uint>();
@@ -917,7 +917,7 @@ namespace AAEmu.Game.Models.Game.Char
             SendPacket(new SCErrorMsgPacket(errorMsgType, type, isNotify));
         }
 
-        public void SendPacket(GamePacket packet)
+        public virtual void SendPacket(GamePacket packet)
         {
             Connection?.SendPacket(packet);
         }
