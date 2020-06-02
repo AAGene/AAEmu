@@ -1,12 +1,14 @@
 ﻿using System;
-using AAEmu.Commons.Utils;
+
 using AAEmu.Game.Core.Managers;
-using AAEmu.Game.Models.Game.Char;
+using AAEmu.Game.Core.Managers.World;
+
 using AAEmu.Game.Models.Game.DoodadObj.Templates;
 using AAEmu.Game.Models.Game.Items.Actions;
 using AAEmu.Game.Models.Game.Units;
+using AAEmu.Game.Models.Game.Char;
 using AAEmu.Game.Models.Tasks.Doodads;
-using AAEmu.Game.Utils;
+using AAEmu.Commons.Utils;
 
 namespace AAEmu.Game.Models.Game.DoodadObj.Funcs
 {
@@ -26,7 +28,7 @@ namespace AAEmu.Game.Models.Game.DoodadObj.Funcs
                 skillId, After, Respawn, MinTime, MaxTime, ShowTip, ShowEndTime, Tip);
 
             var delay = Rand.Next(MinTime, MaxTime);
-            var character = (Character)caster;
+            var character = (Character)caster; 
             if (character != null)
             {
                 const int count = 1;
@@ -35,14 +37,16 @@ namespace AAEmu.Game.Models.Game.DoodadObj.Funcs
                 {
                     foreach (var itemId in itemTemplate)
                     {
-                        var item = ItemManager.Instance.Create(itemId, count, 0);
-                        InventoryHelper.AddItemAndUpdateClient(character, item);
+                        if (!character.Inventory.Bag.AcquireDefaultItem(ItemTaskType.AutoLootDoodadItem, itemId, count))
+                        {
+                            // TODO: do proper handling of insufficient bag space
+                            character.SendErrorMessage(Error.ErrorMessageType.BagFull);
+                        }
                     }
                 }
             }
             if (After > 0)
             {
-                owner.GrowthTime = DateTime.Now.AddMilliseconds(delay); // TODO ... need here?
                 owner.FuncTask = new DoodadFuncFinalTask(caster, owner, skillId, Respawn);
                 TaskManager.Instance.Schedule(owner.FuncTask, TimeSpan.FromMilliseconds(After)); // After ms remove the object from visibility
             }

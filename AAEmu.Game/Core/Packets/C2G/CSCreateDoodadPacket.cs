@@ -39,20 +39,12 @@ namespace AAEmu.Game.Core.Packets.C2G
             doodadSpawner.Position.RotationY = 0;
             doodadSpawner.Position.RotationZ = 0;
             doodadSpawner.Scale = scale;
-            var doodad = doodadSpawner.Spawn(0);
+            var doodad = doodadSpawner.Spawn(0, (ulong)itemId, Connection.ActiveChar.ObjId);
+
             if (doodad == null)
-            {
                 _log.Warn("Doodad {0}, from spawn not exist at db", id);
-            }
             else
             {
-                doodad.OwnerType = DoodadOwnerType.Character;
-                doodad.OwnerId = Connection.ActiveChar.Id;
-                doodad.OwnerObjId = Connection.ActiveChar.ObjId;
-                //doodad.Position = new Models.Game.World.Point(Connection.ActiveChar.Position.WorldId, Connection.ActiveChar.Position.ZoneId, x, y, z, 0, 0, 0);
-                if (scale > 0)
-                    doodad.SetScale(scale);
-                doodad.Spawn();
 
                 var items = ItemManager.Instance.GetItemIdsFromDoodad(id);
 
@@ -61,13 +53,15 @@ namespace AAEmu.Game.Core.Packets.C2G
                     var player = Connection.ActiveChar;
                     foreach (var item in items)
                     {
-                        var itemToRemove = player.Inventory.GetItemBeItemId(item);
+                        player.Inventory.ConsumeItem(null,ItemTaskType.DoodadCreate, item, 1,null);
+                        /*
+                        var itemToRemove = player.Inventory.GetItemByItemId(item);
                         if(itemToRemove != null)
                             InventoryHelper.RemoveItemAndUpdateClient(player, itemToRemove, 1);
+                        */
                     }
                 }
             }
-
         }
     }
 }
